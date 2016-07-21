@@ -1,0 +1,32 @@
+machine:
+  timezone: UTC/UTC
+
+  environment:
+    PACKER_VERSION: 0.10.1
+    UBUNTU_VERSION: 16.04
+    UBUNTU_TYPE: server
+    UBUNTU_ARCH: amd64
+
+dependencies:
+  pre:
+    - >
+      sudo apt-get install -qq wget unzip &&
+      sudo mkdir /opt/packer &&
+      pushd /opt/packer &&
+      echo "Downloading packer ${PACKER_VERSION}..." &&
+      sudo wget --no-verbose https://releases.hashicorp.com/packer/0.10.1/packer_${PACKER_VERSION}_linux_amd64.zip &&
+      echo "Installing packer ${PACKER_VERSION}..." &&
+      sudo unzip packer_${PACKER_VERSION}_linux_amd64.zip &&
+      sudo rm packer_${PACKER_VERSION}_linux_amd64.zip &&
+      pushd /usr/bin &&
+      sudo ln -s /opt/packer/* .
+
+test:
+  override:
+    - packer version
+
+deployment:
+  publish:
+    branch: master
+    commands:
+      - packer push -name=holser/ubuntu-${UBUNTU_VERSION}-${UBUNTU_TYPE}-${UBUNTU_ARCH} ubuntu-server.json
