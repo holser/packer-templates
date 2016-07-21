@@ -1,16 +1,16 @@
 machine:
-  timezone: UTC/UTC
-
   environment:
     PACKER_VERSION: 0.10.1
+    PACKER_LOG: 1
     UBUNTU_VERSION: 16.04
     UBUNTU_TYPE: server
     UBUNTU_ARCH: amd64
+    HEADLESS: true
 
 dependencies:
   pre:
     - >
-      sudo apt-get install -qq wget unzip &&
+      sudo apt-get install -qq wget unzip qemu-system-x86 &&
       sudo mkdir /opt/packer &&
       pushd /opt/packer &&
       echo "Downloading packer ${PACKER_VERSION}..." &&
@@ -23,10 +23,16 @@ dependencies:
 
 test:
   override:
-    - packer version
+    - packer validate -syntax-only ubuntu-server.json:
+        parallel: true
+        timeout: 600
+    - jq 'del(.["post-processors", "push"])' ubuntu-server.json | sudo -E -s packer build -var 'ssh_wait_timeout=110m' -var 'accelerator=none' -var 'cpus=2' -only=qemu -:
+        parallel: true
+        timeout: 7200
 
 deployment:
   publish:
     branch: master
     commands:
-      - packer push -name=holser/ubuntu-${UBUNTU_VERSION}-${UBUNTU_TYPE}-${UBUNTU_ARCH} ubuntu-server.json
+      - ls:
+          timeout: 7200

@@ -1,14 +1,12 @@
 # Packer Templates
 
 [![Circle CI](https://circleci.com/gh/holser/packer-templates.svg?style=svg)](https://circleci.com/gh/holser/packer-templates)
-| [Atlas Builds](https://atlas.hashicorp.com/holser/build-configurations/packer-templates)
-| [Atlas Vagrant Boxes](https://atlas.hashicorp.com/holser/boxes/packer-templates)
+| [Atlas Vagrant Boxes](http://atlas.hashicorp.com/holser/boxes/ubuntu-16.04-server-amd64)
 
 ---
 
-The automated build is triggered by a WebHook in GitHub to start a build in
-CircleCI that triggers builds. All artifacts are pushed to
-[Atlas](https://github.com/holser/packer-templates/) with `packer push`.
+The automated build is triggered by a WebHook in GitHub to spawn a build in
+CircleCI.
 
 ## Packer template
 
@@ -17,7 +15,7 @@ deploying the Vagrant Box to Atlas.
 
 ## circle.yml
 See the `circle.yml` for details how the glue works. It just installs packer 0.10.1
-and starts the `packer push`.
+and starts the `packer build`.
 
 ## Login Credentials
 
@@ -33,16 +31,13 @@ and starts the `packer push`.
 * Vagrant Virtualbox Provider
 
 ### qemu
-* VirtIO dynamic Hard Disk (up to 10 GiB)
-* VirtIO Network Interface
-* QXL Video Card (SPICE display)
 
-### virtualbox
-* VirtIO Network Interface
+* VirtIO dynamic Hard Disk (up to 10 GiB)
+* QXL Video Card (SPICE display)
 
 #### Customized installation
 
-#### Minimal installation
+##### Minimal installation
 
 * en_US.UTF-8
 * keymap for standard US keyboard
