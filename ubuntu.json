@@ -1,16 +1,16 @@
 {
-  "_comment": "Build with `PACKER_LOG=1 UBUNTU_VERSION=16.04 UBUNTU_TYPE=server UBUNTU_ARCH=amd64 HEADLESS=true packer build ubuntu-server.json`",
+  "_comment": "Build with `PACKER_LOG=1 UBUNTU_MAJOR_VERSION=16.04 UBUNTU_MINOR_VERSION=.1 UBUNTU_TYPE=server UBUNTU_ARCH=amd64 HEADLESS=true packer build ubuntu.json`",
 
   "variables": {
-    "name": "ubuntu-{{ env `UBUNTU_VERSION` }}-{{ env `UBUNTU_TYPE` }}-{{ env `UBUNTU_ARCH` }}",
-    "iso_name": "ubuntu-{{ env `UBUNTU_VERSION` }}-{{ env `UBUNTU_TYPE` }}-{{ env `UBUNTU_ARCH` }}",
+    "name": "ubuntu-{{ env `UBUNTU_MAJOR_VERSION` }}{{ env `UBUNTU_MINOR_VERSION` }}-{{ env `UBUNTU_TYPE` }}-{{ env `UBUNTU_ARCH` }}",
+    "iso_name": "ubuntu-{{ env `UBUNTU_MAJOR_VERSION` }}{{ env `UBUNTU_MINOR_VERSION` }}-{{ env `UBUNTU_TYPE` }}-{{ env `UBUNTU_ARCH` }}",
     "ubuntu_type": "{{ env `UBUNTU_TYPE` }}",
-    "ubuntu_version": "{{ env `UBUNTU_VERSION` }}",
+    "ubuntu_version": "{{ env `UBUNTU_MAJOR_VERSION` }}",
     "ubuntu_mirror": "http://releases.ubuntu.com/",
     "ssh_username": "vagrant",
     "ssh_password": "vagrant",
     "ssh_wait_timeout": "30m",
-    "preseed_file_name": "preseed-{{ env `UBUNTU_VERSION` }}.cfg",
+    "preseed_file_name": "preseed-{{ env `UBUNTU_MAJOR_VERSION` }}.cfg",
     "accelerator": "kvm",
     "cpus": "1",
     "memory": "1024",
@@ -118,11 +118,14 @@
       "type": "shell",
       "environment_vars": [
         "INSTALL_VAGRANT_KEY={{user `install_vagrant_key`}}",
-        "UPDATE={{user `update`}}"
+        "UPDATE={{user `update`}}",
+        "DEBIAN_FRONTEND=noninteractive"
       ],
       "execute_command": "echo 'vagrant' | {{.Vars}} sudo -S -E bash -x '{{.Path}}'",
       "scripts": [
         "scripts/ubuntu/update.sh",
+        "scripts/ubuntu/packages.sh",
+        "scripts/ubuntu/setup.sh",
         "scripts/vagrant.sh",
         "scripts/sshd.sh",
         "scripts/vmtool.sh"
@@ -153,52 +156,10 @@
         "output": "{{ user `name` }}-{{.Provider}}.box"
       },
       {
-        "type": "atlas",
-        "only": [ "qemu" ],
-        "artifact": "holser/{{user `name` }}",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "libvirt",
-          "created_at": "{{timestamp}}"
-        }
-      },
-      {
-        "type": "atlas",
-        "only": [ "qemu" ],
-        "artifact": "holser/{{user `name` }}",
-        "artifact_type": "qemu.image",
-        "metadata": {
-          "created_at": "{{timestamp}}"
-        }
-      },
-      {
         "type": "vagrant",
         "only": [ "virtualbox-iso" ],
         "compression_level": 9,
         "output": "{{ user `name` }}-{{.Provider}}.box"
-      },
-      {
-        "type": "atlas",
-        "only": [ "virtualbox-iso" ],
-        "artifact": "holser/{{user `name` }}",
-        "artifact_type": "vagrant.box",
-        "metadata": {
-          "provider": "virtualbox",
-          "created_at": "{{timestamp}}"
-        }
-      },
-      {
-        "type": "atlas",
-        "only": [ "virtualbox-iso" ],
-        "artifact": "holser/{{user `name` }}",
-        "artifact_type": "virtualbox.image",
-        "metadata": {
-          "version": "{{ user `version` }}",
-          "created_at": "{{timestamp}}"
-        }
       }
-  ],
-  "push": {
-    "name": "holser/{{user `name` }}"
-  }
+  ]
 }

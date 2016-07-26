@@ -1,4 +1,4 @@
-#!/bin/bash -eux
+#!/bin/bash -euxo
 
 echo "==> Installed packages before cleanup"
 dpkg --get-selections | grep -v deinstall
@@ -26,17 +26,16 @@ echo "==> Removing any docs"
 rm -rf /usr/share/doc/*
 echo "==> Removing caches"
 find /var/cache -type f -exec rm -rf {} \;
+echo "==> Cleaning up log files"
+find /var/log -type f -exec sh -c 'echo -n > {}' \;
 echo "==> Cleaning up tmp"
 rm -rf /tmp/*
-echo "==> Cleaning up log files"
-find /var/log -type f | while read f; do echo -ne '' > $f; done;
 echo "==> Clearing last login information"
->/var/log/lastlog
->/var/log/wtmp
->/var/log/btmp
+> /var/log/lastlog
+> /var/log/wtmp
+> /var/log/btmp
 
 echo "==> Removing bash history"
 unset HISTFILE
 rm -f /root/.bash_history
 rm -f /home/vagrant/.bash_history
-
