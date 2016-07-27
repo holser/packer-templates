@@ -1,9 +1,9 @@
 {
-  "_comment": "Build with `PACKER_LOG=1 DEBIAN_MAJOR_VERSION=8 DEBIAN_MINOR_VERSION=5 DEBIAN_ARCH=amd64 HEADLESS=true packer build debian.json`",
+  "_comment": "Build with `PACKER_LOG=1 DEBIAN_MAJOR_VERSION=8 DEBIAN_MINOR_VERSION=5 ARCH=amd64 HEADLESS=true packer build debian.json`",
 
   "variables": {
-    "name": "debian-{{ env `DEBIAN_MAJOR_VERSION` }}.{{ env `DEBIAN_MINOR_VERSION` }}.0-{{ env `DEBIAN_ARCH` }}",
-    "iso_name": "debian-{{ env `DEBIAN_MAJOR_VERSION` }}.{{ env `DEBIAN_MINOR_VERSION` }}.0-{{ env `DEBIAN_ARCH` }}-netinst",
+    "name": "debian-{{ env `DEBIAN_MAJOR_VERSION` }}.{{ env `DEBIAN_MINOR_VERSION` }}.0-{{ env `ARCH` }}",
+    "iso_name": "debian-{{ env `DEBIAN_MAJOR_VERSION` }}.{{ env `DEBIAN_MINOR_VERSION` }}.0-{{ env `ARCH` }}-netinst",
     "debian_type": "{{ env `DEBIAN_TYPE` }}",
     "debian_version": "{{ env `DEBIAN_MAJOR_VERSION` }}.{{ env `DEBIAN_MINOR_VERSION` }}.0",
     "debian_mirror": "http://cdimage.debian.org/cdimage/release/",
@@ -144,18 +144,60 @@
   ],
 
   "post-processors": [
-      {
-        "type": "vagrant",
-        "only": [ "qemu" ],
-        "compression_level": 9,
-        "vagrantfile_template": "Vagrantfile-qemu.template",
-        "output": "{{ user `name` }}-{{.Provider}}.box"
-      },
-      {
-        "type": "vagrant",
-        "only": [ "virtualbox-iso" ],
-        "compression_level": 9,
-        "output": "{{ user `name` }}-{{.Provider}}.box"
+    {
+      "type": "vagrant",
+      "only": [ "qemu" ],
+      "compression_level": 9,
+      "vagrantfile_template": "Vagrantfile-qemu.template",
+      "output": "{{ user `name` }}-{{.Provider}}.box"
+    },
+    {
+      "type": "atlas",
+      "only": [ "qemu" ],
+      "artifact": "holser/{{user `name` }}",
+      "artifact_type": "vagrant.box",
+      "metadata": {
+        "provider": "libvirt",
+        "created_at": "{{timestamp}}"
       }
-  ]
+    },
+    {
+      "type": "atlas",
+      "only": [ "qemu" ],
+      "artifact": "holser/{{user `name` }}",
+      "artifact_type": "qemu.image",
+      "metadata": {
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "vagrant",
+      "only": [ "virtualbox-iso" ],
+      "compression_level": 9,
+      "output": "{{ user `name` }}-{{.Provider}}.box"
+    },
+    {
+      "type": "atlas",
+      "only": [ "virtualbox-iso" ],
+      "artifact": "holser/{{user `name` }}",
+      "artifact_type": "vagrant.box",
+      "metadata": {
+        "provider": "virtualbox",
+        "created_at": "{{timestamp}}"
+      }
+    },
+    {
+      "type": "atlas",
+      "only": [ "virtualbox-iso" ],
+      "artifact": "holser/{{user `name` }}",
+      "artifact_type": "virtualbox.image",
+      "metadata": {
+        "version": "{{ user `version` }}",
+        "created_at": "{{timestamp}}"
+      }
+    }
+  ],
+  "push": {
+    "name": "holser/{{user `name` }}"
+  }
 }

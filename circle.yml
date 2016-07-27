@@ -2,9 +2,9 @@ machine:
   environment:
     PACKER_VERSION: 0.10.1
     PACKER_LOG: 1
-    UBUNTU_VERSION: 16.04
-    UBUNTU_TYPE: server
-    UBUNTU_ARCH: amd64
+    DEBIAN_MAJOR_VERSION: 8
+    DEBIAN_MINOR_VERSION: 5
+    ARCH: amd64
     HEADLESS: true
 
 dependencies:
@@ -26,7 +26,7 @@ test:
     - packer validate -syntax-only ubuntu-server.json:
         parallel: true
         timeout: 600
-    - jq 'del(.["post-processors"])' debian.json | sudo -E -s packer build -var 'ssh_wait_timeout=110m' -var 'accelerator=none' -var 'cpus=2' -only=qemu -:
+    - jq 'del(.["post-processors", "push"])' debian.json | sudo -E -s packer build -var 'ssh_wait_timeout=110m' -var 'accelerator=none' -var 'cpus=2' -only=qemu -:
         parallel: true
         timeout: 7200
 

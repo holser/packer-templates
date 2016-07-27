@@ -26,21 +26,21 @@ and starts the `packer build`.
 ### Ubuntu QEMU build
 
 ```sh
-jq 'del(.["push"])' ubuntu.json | \
+jq 'del(.["post-processors", "push"])' ubuntu.json | \
   UBUNTU_MAJOR_VERSION=16.04 \
   UBUNTU_MINOR_VERSION=.1 \
   UBUNTU_TYPE=server \
-  UBUNTU_ARCH=amd64 \
+  ARCH=amd64 \
   HEADLESS=true \
   packer build -var 'cpus=2' -only=qemu -
 ```
 
 ### Debian QEMU build
 ```sh
-jq 'del(.["push"])' debian.json | \
+jq 'del(.["post-processors", "push"])' debian.json | \
   DEBIAN_MAJOR_VERSION=8 \
   DEBIAN_MINOR_VERSION=5 \
-  DEBIAN_ARCH=amd64 \
+  ARCH=amd64 \
   HEADLESS=true \
   packer build -var 'cpus=2' -only=qemu -
 ```
