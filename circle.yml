@@ -26,7 +26,7 @@ test:
     - packer validate -syntax-only ubuntu-server.json:
         parallel: true
         timeout: 600
-    - jq 'del(.["post-processors", "push"])' ubuntu-server.json | sudo -E -s packer build -var 'ssh_wait_timeout=110m' -var 'accelerator=none' -var 'cpus=2' -only=qemu -:
+    - jq 'del(.["post-processors"])' debian.json | sudo -E -s packer build -var 'ssh_wait_timeout=110m' -var 'accelerator=none' -var 'cpus=2' -only=qemu -:
         parallel: true
         timeout: 7200
 
