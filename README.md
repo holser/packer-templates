@@ -1,20 +1,14 @@
-# Packer Templates
-
-[![Circle CI](https://circleci.com/gh/holser/packer-templates.svg?style=svg)](https://circleci.com/gh/holser/packer-templates)
-| [Atlas Vagrant Boxes](http://atlas.hashicorp.com/holser/boxes/ubuntu-16.04-server-amd64)
-
----
-
-The automated build is triggered by a WebHook in GitHub to spawn a build in
-CircleCI.
-
-## Packer template
+# [Packer](https://www.packer.io) Templates
 
 The most of settings are specified as variables. This allows to override them
 with `-var` key without template modification. A few environment variables
 should be specified as a safety measure. See `debian.json` `ubuntu.json` with
 the post-processors section with all details about deploying the Vagrant Boxes
 to Atlas.
+
+## Github repository for bug reports or feature requests:
+
+[https://github.com/holser/packer-templates/](https://github.com/holser/packer-templates/)
 
 ## circle.yml
 
@@ -23,7 +17,7 @@ and starts the `packer build`.
 
 ## Custom builds
 
-### Ubuntu QEMU build
+### Ubuntu build
 
 ```sh
 jq 'del(.["post-processors", "push"])' ubuntu.json | \
@@ -32,23 +26,18 @@ jq 'del(.["post-processors", "push"])' ubuntu.json | \
   UBUNTU_TYPE=server \
   ARCH=amd64 \
   HEADLESS=true \
-  packer build -var 'cpus=2' -only=qemu -
+  packer build -var 'cpus=2' -
 ```
 
-### Debian QEMU build
+### Debian build
 ```sh
 jq 'del(.["post-processors", "push"])' debian.json | \
   DEBIAN_MAJOR_VERSION=8 \
   DEBIAN_MINOR_VERSION=5 \
   ARCH=amd64 \
   HEADLESS=true \
-  packer build -var 'cpus=2' -only=qemu -
+  packer build -var 'cpus=2' - 
 ```
-
-### VirtualBox builds
-
-`-only=virtualbox-iso` should be used instead of `-only=qemu` to build
-virtualbox image.
 
 ## Login Credentials
 
