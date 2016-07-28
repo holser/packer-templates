@@ -171,6 +171,13 @@
       }
     },
     {
+      "type": "shell-local",
+      "only": [ "qemu" ],
+      "inline": [
+        "qemu-img convert -c -f qcow2 -O qcow2 -o cluster_size=2M ./output-qemu/{{user `name`}} {{user `name`}}.qcow2"
+      ]
+    },
+    {
       "type": "vagrant",
       "only": [ "virtualbox-iso" ],
       "compression_level": 9,
