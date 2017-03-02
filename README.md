@@ -22,7 +22,7 @@ and starts the `packer build`.
 ```sh
 jq 'del(.["post-processors", "push"])' ubuntu.json | \
   UBUNTU_MAJOR_VERSION=16.04 \
-  UBUNTU_MINOR_VERSION=.1 \
+  UBUNTU_MINOR_VERSION=.2 \
   UBUNTU_TYPE=server \
   ARCH=amd64 \
   HEADLESS=true \
